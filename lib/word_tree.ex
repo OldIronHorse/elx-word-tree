@@ -3,16 +3,27 @@ defmodule WordTree do
   Documentation for WordTree.
   """
 
-  @doc """
-  Hello world.
+  def word_tree(words) do
+    Enum.reduce(words,%{},fn(w,dict) -> add(dict,String.graphemes(w)) end)
+  end
 
-  ## Examples
+  def add(dict,[]) do
+    Map.put(dict,nil,nil)
+  end
+  def add(dict,[c|word]) do
+    Map.update(dict,c,add(%{},word),&(add(&1,word)))
+  end
 
-      iex> WordTree.hello
-      :world
-
-  """
-  def hello do
-    :world
+  def next_char(tree,[]) do
+    Map.keys(tree)
+  end
+  def next_char(tree,[c|word]) do
+    case Map.fetch(tree,c) do
+      {:ok,next_tree} -> next_char(next_tree,word)
+      _ -> []
+    end
+  end
+  def next_char(tree,word) do
+    next_char(tree,String.graphemes(word))
   end
 end
